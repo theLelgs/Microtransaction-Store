@@ -38,7 +38,7 @@ Dictionary<string, int> GetLBLootWeight(string LootBoxName) //Tar fram data frå
     }
     return tempDictionary;
 }
-List<string> makeLootPool(Dictionary<string, int> LootPoolDictionary) //Tar namnet på varje item och lägger till den till en lista ett antal ggr lika med dens vikt.
+List<string> makeLootPool(Dictionary<string, int> LootPoolDictionary) //Tar namnet på varje Item och lägger till den till en lista ett antal ggr lika med dens vikt.
 {
     List<string> templist = [];
     foreach (string a in LootPoolDictionary.Keys)
@@ -83,33 +83,39 @@ Dictionary<string, int> totalLoot = [];
 
 while (Coins > 0)
 {
-    Console.WriteLine($"What lootbox do you want to open?\nHold Shift to buy 10.\nYou have {Coins} coins.\nQ. Normal lootbox, 1 coin\nW. Special Lootbox, 3 Coins\nE. Lootbox deluxe, 7 coins");
+    Console.WriteLine($"What lootbox do you want to open?\nHold Shift to buy 10.\nYou have {Coins} coins.\n1. Normal lootbox, 1 coin\n2. Special Lootbox, 3 Coins\n3. Lootbox deluxe, 7 coins");
     string input = "test";
-    List<string> inputList = ["q", "w", "e", "Q", "W", "E"];
+    List<string> inputList = ["1", "2", "3", "!", "\"", "#"];
     while (inputList.Contains(input) == false)
     {
         input = keyTest();
     }
     int BuyAmount = 1;
-    if (input == "Q" && Coins >= (Math.Pow(2, inputList.IndexOf(input.ToLower()) + 1) - 1) * 10 || input == "W" && Coins >= (Math.Pow(2, inputList.IndexOf(input.ToLower()) + 1) - 1) * 10 || input == "E" && Coins >= (Math.Pow(2, inputList.IndexOf(input.ToLower()) + 1) - 1) * 10)
+    List<string> capitalInput = ["!", "\"", "#"];
+    if (capitalInput.Contains(input))
     {
         BuyAmount = 10;
+        input = inputList[capitalInput.IndexOf(input)];
     }
     if (Coins >= ((Math.Pow(2, inputList.IndexOf(input.ToLower()) + 1) - 1) * BuyAmount))
     {
-        Coins -= (int)((Math.Pow(2, inputList.IndexOf(input.ToLower()) + 1) - 1) * BuyAmount);
-        List<string> currentLootPool = makeLootPool(GetLBLootWeight($"LB{input.ToUpper()}"));
+        Coins -= (int)((Math.Pow(2, inputList.IndexOf(input) + 1) - 1) * BuyAmount);
+        List<string> currentLootPool;
+        if (capitalInput.Contains(input))
+        {
+            currentLootPool = makeLootPool(GetLBLootWeight($"LB{inputList[capitalInput.IndexOf(input)]}"));
+        }
+        else
+        {
+            currentLootPool = makeLootPool(GetLBLootWeight($"LB{input}"));
+        }
         for (int a = 0; a < BuyAmount; a++)
         {
             Item currentLootPoolResult = runLootPool(currentLootPool);
             Console.WriteLine($"\n{currentLootPoolResult.Sprite}");
-            if (totalLoot.ContainsKey(currentLootPoolResult.Name))
+            if (!totalLoot.TryAdd(currentLootPoolResult.Name, 1))
             {
                 totalLoot[currentLootPoolResult.Name] += 1;
-            }
-            else
-            {
-                totalLoot.Add(currentLootPoolResult.Name, 1);
             }
         }
         keyTest();
