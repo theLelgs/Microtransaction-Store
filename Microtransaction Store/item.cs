@@ -6,4 +6,5 @@ class Item
     public string Name;
     public string Sprite;
     // public int Damage;
+    public string Rarity;
 }

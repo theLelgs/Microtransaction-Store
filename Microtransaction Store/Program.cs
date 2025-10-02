@@ -1,26 +1,34 @@
-﻿using Microtransaction_Store;
+﻿using System.Xml;
+using Microtransaction_Store;
 
 Item w1 = new()
 {
     Name = "Pistol",
-    Sprite = "Pistol"
+    Sprite = "Pistol",
+    Rarity = "Legendary"
 };
 Item w2 = new()
 {
     Name = "Sword",
-    Sprite = "Sword"
+    Sprite = "Sword",
+    Rarity = "Epic"
 };
 Item w3 = new()
 {
     Name = "Pencil",
-    Sprite = "Pencil"
+    Sprite = "Pencil",
+    Rarity = "Rare"
 };
 Item w4 = new()
 {
     Name = "Singular Carbon Atom",
-    Sprite = "Singular Carbon Atom"
+    Sprite = "Singular Carbon Atom",
+    Rarity = "Common"
 };
 Item currentLootPoolResult;
+List<Item> weaponlist = [w1, w2, w3, w4];
+List<ConsoleColor> ColorList = [ConsoleColor.White, ConsoleColor.Blue, ConsoleColor.Magenta, ConsoleColor.Yellow];
+List<string> RarityList = ["Common", "Rare", "Epic", "Legendary"];
 
 Dictionary<string, int> GetLBLootWeight(string LootBoxName) //Tar fram data från LootBoxes.txt och omvandlar till en dictionary, där namnet på varje item kopplas tills dens vikt.
 {
@@ -52,7 +60,7 @@ List<string> makeLootPool(Dictionary<string, int> LootPoolDictionary) //Tar namn
 }
 Item runLootPool(List<string> LootPool) //Tar fram ett slumpat namn ur listan och tar fram vilket item det passar till.
 {
-    List<Item> weaponlist = [w1, w2, w3, w4];
+    
     string randomItem = LootPool[Random.Shared.Next(LootPool.Count)];
     foreach (Item x in weaponlist)
     {
@@ -77,18 +85,38 @@ string keyTest() //Kollar efter inputs
 
     return a;
 }
-void writeTotalLoot(Dictionary<string,int> tempDictionary)
+void writeTotalLoot(Dictionary<string,int> tempDictionary, bool writeRarity) //tar en Dictionary med olika items och deras mängd och skriver ut dem. bool om rarity också ska skrivas
 {
     Console.WriteLine("Total Loot:\n");
     foreach (string key in tempDictionary.Keys)
     {
         Console.WriteLine($"You have gotten {key} * {tempDictionary[key]}");
+
+        if (writeRarity)
+        {
+            foreach (Item weapon in weaponlist)
+            {
+                if (weapon.Name == key)
+                {
+                    Console.Write($"Rarity: ");
+                    Console.ForegroundColor = ColorList[RarityList.IndexOf(weapon.Rarity)];
+                    Console.Write(weapon.Rarity + "\n\n");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+        }
+        else
+        {
+            Console.Write("\n");
+        }
     }
 }
 
 int Coins = 100;
 Dictionary<string, int> totalLoot = [];
 Dictionary<string, int> currentLoot = [];
+
+
 
 while (Coins > 0)
 {
@@ -101,7 +129,7 @@ while (Coins > 0)
     }
     if (input.ToLower() == "e")
     {
-        writeTotalLoot(totalLoot);
+        writeTotalLoot(totalLoot, false);
     }
     else
     {
@@ -154,6 +182,16 @@ while (Coins > 0)
             foreach (var key in currentLoot.Keys)
             {
                 Console.WriteLine($"You got {key} * {currentLoot[key]}");
+                foreach (Item weapon in weaponlist)
+                {
+                    if (weapon.Name == key)
+                    {
+                        Console.Write($"Rarity: ");
+                        Console.ForegroundColor = ColorList[RarityList.IndexOf(weapon.Rarity)];
+                        Console.Write(weapon.Rarity +"\n\n");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
             }
             currentLoot = [];
 
@@ -169,5 +207,5 @@ while (Coins > 0)
 }
 
 keyTest();
-writeTotalLoot(totalLoot);
+if (Random.Shared.Next(2) == 1) writeTotalLoot(totalLoot, true); else writeTotalLoot(totalLoot, false);
 keyTest();
