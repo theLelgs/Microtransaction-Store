@@ -1,3 +1,0 @@
-LB1|Pistol:10|Sword:20|Pencil:50|Singular Carbon Atom:100
-LB2|Pistol:20|Sword:40|Pencil:60|Singular Carbon Atom:60
-LB3|Pistol:40|Sword:60|Pencil:80|Singular Carbon Atom:0
