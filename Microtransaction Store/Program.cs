@@ -1,5 +1,4 @@
-﻿using System.Xml;
-using Microtransaction_Store;
+﻿using Microtransaction_Store;
 
 Item w1 = new()
 {
@@ -85,32 +84,37 @@ string keyTest() //Kollar efter inputs
 
     return a;
 }
-void writeTotalLoot(Dictionary<string,int> tempDictionary, bool writeRarity) //tar en Dictionary med olika items och deras mängd och skriver ut dem. bool om rarity också ska skrivas
+void writeLoot(Dictionary<string,int> tempDictionary, bool writeRarity) //tar en Dictionary med olika items och deras mängd och skriver ut dem. bool om rarity också ska skrivas
 {
-    Console.WriteLine("Total Loot:\n");
-    foreach (string key in tempDictionary.Keys)
-    {
-        Console.WriteLine($"You have gotten {key} * {tempDictionary[key]}");
 
-        if (writeRarity)
+    foreach (string rarity in RarityList)
+    {
+
+        foreach (string key in tempDictionary.Keys)
         {
-            foreach (Item weapon in weaponlist)
+
+            bool rarityFound = false;
+            foreach (Item Weapon in weaponlist)
             {
-                if (weapon.Name == key)
+                if (Weapon.Rarity == rarity && Weapon.Name == key && rarityFound == false)
                 {
-                    Console.Write($"Rarity: ");
-                    Console.ForegroundColor = ColorList[RarityList.IndexOf(weapon.Rarity)];
-                    Console.Write(weapon.Rarity + "\n\n");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"{key} * {tempDictionary[key]}");
+                    if (writeRarity == true)
+                    {
+                        Console.Write($"Rarity: ");
+                        Console.ForegroundColor = ColorList[RarityList.IndexOf(Weapon.Rarity)];
+                        Console.Write(Weapon.Rarity + "\n");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        rarityFound = true;
+                    }
+                    Console.Write("\n");
                 }
             }
         }
-        else
-        {
-            Console.Write("\n");
-        }
     }
 }
+
+
 
 int Coins = 100;
 Dictionary<string, int> totalLoot = [];
@@ -122,14 +126,20 @@ while (Coins > 0)
 {
     Console.WriteLine($"What lootbox do you want to open?\nHold Shift to buy multiple.\nYou have {Coins} coins.\n1. Normal lootbox, 1 coin\n2. Special Lootbox, 3 Coins\n3. Lootbox Deluxe, 7 coins\nE. See total loot.");
     string input = "test";
-    List<string> inputList = ["1", "2", "3", "!", "\"", "#", "e", "E"];
+    List<string> inputList = ["1", "2", "3", "!", "\"", "#", "e", "E", "?"];
     while (inputList.Contains(input) == false)
     {
         input = keyTest();
     }
     if (input.ToLower() == "e")
     {
-        writeTotalLoot(totalLoot, false);
+        Console.WriteLine("Current Loot: ");
+        writeLoot(totalLoot, false);
+        keyTest();
+    }
+    else if (input == "?")
+    {
+        Coins += 1000;
     }
     else
     {
@@ -179,20 +189,8 @@ while (Coins > 0)
                     totalLoot[currentLootPoolResult.Name] += 1;
                 }
             }
-            foreach (var key in currentLoot.Keys)
-            {
-                Console.WriteLine($"You got {key} * {currentLoot[key]}");
-                foreach (Item weapon in weaponlist)
-                {
-                    if (weapon.Name == key)
-                    {
-                        Console.Write($"Rarity: ");
-                        Console.ForegroundColor = ColorList[RarityList.IndexOf(weapon.Rarity)];
-                        Console.Write(weapon.Rarity +"\n\n");
-                        Console.ForegroundColor = ConsoleColor.White;
-                    }
-                }
-            }
+            Console.WriteLine("\nYou got: \n");
+            writeLoot(currentLoot, true);
             currentLoot = [];
 
 
@@ -201,11 +199,12 @@ while (Coins > 0)
         {
             Console.WriteLine("Not enough money");
         }
+        keyTest();
     }
-    keyTest();
     Console.Clear();
 }
 
 keyTest();
-if (Random.Shared.Next(2) == 1) writeTotalLoot(totalLoot, true); else writeTotalLoot(totalLoot, false);
+
+writeLoot(totalLoot, true);
 keyTest();
